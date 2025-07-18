@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
+import AgentChat from './components/AgentChat'
 import { 
   Bot, 
   Workflow, 
@@ -16,7 +17,8 @@ import {
   Brain,
   Network,
   Eye,
-  Sparkles
+  Sparkles,
+  MessageCircle
 } from 'lucide-react'
 import Dashboard from './components/Dashboard'
 import AgentBuilder from './components/AgentBuilder'
