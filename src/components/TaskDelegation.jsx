@@ -200,26 +200,123 @@ const TaskDelegation = () => {
           )}
 
           {/* Result Display */}
-          {result && !showProgress && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <div className="flex items-center mb-2">
-                <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-                <span className="font-medium text-green-800">Task Completed</span>
+          {result && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+              <div className="flex items-center mb-4">
+                <CheckCircle className="w-6 h-6 text-green-500 mr-2" />
+                <span className="font-semibold text-green-800 text-lg">Task Completed Successfully!</span>
               </div>
-              <div className="text-sm text-green-700">
-                <p><strong>Execution ID:</strong> {result.execution_id}</p>
-                <p><strong>Status:</strong> {result.status}</p>
-                <p><strong>Subtasks:</strong> {result.subtasks_completed}/{result.total_subtasks} completed</p>
-                <p><strong>Iterations:</strong> {result.iterations}</p>
+              
+              {/* Execution Summary */}
+              <div className="bg-white rounded-lg p-4 mb-4">
+                <h3 className="font-semibold text-gray-800 mb-2">Execution Summary</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-600">Status:</span>
+                    <span className="ml-2 font-medium text-green-600">{result.result?.status || result.status}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Subtasks:</span>
+                    <span className="ml-2 font-medium">{result.result?.subtasks_completed || result.subtasks_completed}/{result.result?.total_subtasks || result.total_subtasks}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Execution Time:</span>
+                    <span className="ml-2 font-medium">{result.result?.execution_summary?.execution_time?.toFixed(2) || 'N/A'}s</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Agents Used:</span>
+                    <span className="ml-2 font-medium">{result.result?.execution_summary?.total_agents || 'N/A'}</span>
+                  </div>
+                </div>
               </div>
-              {executionId && (
-                <button
-                  onClick={() => setShowProgress(true)}
-                  className="mt-3 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center"
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  View Details
-                </button>
+
+              {/* Task Summary */}
+              {result.result?.summary && (
+                <div className="bg-white rounded-lg p-4 mb-4">
+                  <h3 className="font-semibold text-gray-800 mb-2">Summary</h3>
+                  <p className="text-gray-700 text-sm">{result.result.summary}</p>
+                </div>
+              )}
+
+              {/* Deliverables */}
+              {result.result?.deliverables && (
+                <div className="bg-white rounded-lg p-4 mb-4">
+                  <h3 className="font-semibold text-gray-800 mb-3">Deliverables Created</h3>
+                  <div className="space-y-3">
+                    {result.result.deliverables.presentation && (
+                      <div className="border border-gray-200 rounded-lg p-3">
+                        <div className="flex items-center mb-2">
+                          <Play className="w-4 h-4 text-orange-500 mr-2" />
+                          <span className="font-medium text-gray-800">PowerPoint Presentation</span>
+                        </div>
+                        <div className="text-sm text-gray-600 space-y-1">
+                          <p><strong>File:</strong> {result.result.deliverables.presentation.file_path}</p>
+                          <p><strong>Slides:</strong> {result.result.deliverables.presentation.slides_count}</p>
+                          <p><strong>Duration:</strong> {result.result.deliverables.presentation.estimated_duration}</p>
+                          <p><strong>Format:</strong> {result.result.deliverables.presentation.format}</p>
+                          <div className="mt-2">
+                            <strong>Features:</strong>
+                            <ul className="list-disc list-inside ml-2">
+                              {result.result.deliverables.presentation.features?.map((feature, idx) => (
+                                <li key={idx}>{feature}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {result.result.deliverables.content && (
+                      <div className="border border-gray-200 rounded-lg p-3">
+                        <div className="flex items-center mb-2">
+                          <Target className="w-4 h-4 text-purple-500 mr-2" />
+                          <span className="font-medium text-gray-800">Content & Narrative</span>
+                        </div>
+                        <div className="text-sm text-gray-600 space-y-1">
+                          <p><strong>Target Audience:</strong> {result.result.deliverables.content.target_audience}</p>
+                          <p><strong>Duration:</strong> {result.result.deliverables.content.estimated_duration}</p>
+                          <div className="mt-2">
+                            <strong>Slides Created:</strong>
+                            <div className="mt-1 space-y-1">
+                              {result.result.deliverables.content.slides?.map((slide, idx) => (
+                                <div key={idx} className="bg-gray-50 p-2 rounded">
+                                  <div className="font-medium text-xs text-gray-800">{slide.title}</div>
+                                  <div className="text-xs text-gray-600 mt-1">{slide.narrative?.substring(0, 100)}...</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Agent Results */}
+              {result.result?.agent_results && (
+                <div className="bg-white rounded-lg p-4">
+                  <h3 className="font-semibold text-gray-800 mb-3">Agent Contributions</h3>
+                  <div className="space-y-3">
+                    {Object.entries(result.result.agent_results).map(([agentName, agentResult]) => (
+                      <div key={agentName} className="border border-gray-200 rounded-lg p-3">
+                        <div className="flex items-center mb-2">
+                          {getAgentIcon(agentName)}
+                          <span className="ml-2 font-medium text-gray-800 capitalize">
+                            {agentName.replace('_', ' ')}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {agentResult.findings && <p><strong>Findings:</strong> {agentResult.findings}</p>}
+                          {agentResult.content && <p><strong>Content:</strong> {agentResult.content}</p>}
+                          {agentResult.deliverable && <p><strong>Deliverable:</strong> {agentResult.deliverable}</p>}
+                          {agentResult.review && <p><strong>Review:</strong> {agentResult.review}</p>}
+                          {agentResult.confidence && <p><strong>Confidence:</strong> {(agentResult.confidence * 100).toFixed(0)}%</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           )}
