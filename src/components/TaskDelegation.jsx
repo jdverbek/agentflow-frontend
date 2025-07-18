@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Play, Clock, CheckCircle, AlertCircle, Users, Brain, Target, BarChart3 } from 'lucide-react';
 
 const TaskDelegation = () => {
@@ -17,7 +17,7 @@ const TaskDelegation = () => {
     setExecutionStatus(null);
 
     try {
-      const response = await fetch('/api/orchestration/execute', {
+      const response = await fetch('https://agentflow-backend-99xa.onrender.com/api/orchestration/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,23 +25,23 @@ const TaskDelegation = () => {
         body: JSON.stringify({
           task: task,
           max_iterations: maxIterations,
-          async: true
+          async: false  // Use synchronous for now
         }),
       });
 
       const data = await response.json();
       
-      if (data.execution_id) {
-        setExecutionId(data.execution_id);
-        // Start monitoring the execution
-        monitorExecution(data.execution_id);
+      if (response.ok) {
+        setExecutionResult(data);
+        setIsExecuting(false);
       } else {
-        // Synchronous execution completed
-        setExecutionResult(data.result);
+        console.error('Error response:', data);
+        setExecutionResult({ error: data.error || 'Unknown error occurred' });
         setIsExecuting(false);
       }
     } catch (error) {
       console.error('Error executing task:', error);
+      setExecutionResult({ error: 'Network error: ' + error.message });
       setIsExecuting(false);
     }
   };
