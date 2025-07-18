@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
-import AgentChat from './components/AgentChat'
+import TaskDelegation from './components/TaskDelegation';
 import { 
   Bot, 
   Workflow, 
@@ -57,6 +57,7 @@ function App() {
     { id: 'agents', label: 'Agents', icon: Bot },
     { id: 'workflows', label: 'Workflows', icon: Workflow },
     { id: 'executions', label: 'Executions', icon: Play },
+    { id: 'manager', label: 'Manager Agent', icon: Users },
     { id: 'settings', label: 'Settings', icon: Settings }
   ]
 
@@ -70,6 +71,8 @@ function App() {
         return <WorkflowDesigner workflows={workflows} setWorkflows={setWorkflows} agents={agents} />
       case 'executions':
         return <ExecutionMonitor executions={executions} />
+      case 'manager':
+        return <TaskDelegation />
       case 'settings':
         return <SettingsPanel />
       default:
