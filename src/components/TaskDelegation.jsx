@@ -243,53 +243,102 @@ const TaskDelegation = () => {
                 <div className="bg-white rounded-lg p-4 mb-4">
                   <h3 className="font-semibold text-gray-800 mb-3">Deliverables Created</h3>
                   <div className="space-y-3">
-                    {result.result.deliverables.presentation && (
-                      <div className="border border-gray-200 rounded-lg p-3">
-                        <div className="flex items-center mb-2">
-                          <Play className="w-4 h-4 text-orange-500 mr-2" />
-                          <span className="font-medium text-gray-800">PowerPoint Presentation</span>
-                        </div>
-                        <div className="text-sm text-gray-600 space-y-1">
-                          <p><strong>File:</strong> {result.result.deliverables.presentation.file_path}</p>
-                          <p><strong>Slides:</strong> {result.result.deliverables.presentation.slides_count}</p>
-                          <p><strong>Duration:</strong> {result.result.deliverables.presentation.estimated_duration}</p>
-                          <p><strong>Format:</strong> {result.result.deliverables.presentation.format}</p>
-                          <div className="mt-2">
-                            <strong>Features:</strong>
-                            <ul className="list-disc list-inside ml-2">
-                              {result.result.deliverables.presentation.features?.map((feature, idx) => (
-                                <li key={idx}>{feature}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {result.result.deliverables.content && (
-                      <div className="border border-gray-200 rounded-lg p-3">
-                        <div className="flex items-center mb-2">
-                          <Target className="w-4 h-4 text-purple-500 mr-2" />
-                          <span className="font-medium text-gray-800">Content & Narrative</span>
-                        </div>
-                        <div className="text-sm text-gray-600 space-y-1">
-                          <p><strong>Target Audience:</strong> {result.result.deliverables.content.target_audience}</p>
-                          <p><strong>Duration:</strong> {result.result.deliverables.content.estimated_duration}</p>
-                          <div className="mt-2">
-                            <strong>Slides Created:</strong>
-                            <div className="mt-1 space-y-1">
-                              {result.result.deliverables.content.slides?.map((slide, idx) => (
-                                <div key={idx} className="bg-gray-50 p-2 rounded">
-                                  <div className="font-medium text-xs text-gray-800">{slide.title}</div>
-                                  <div className="text-xs text-gray-600 mt-1">{slide.narrative?.substring(0, 100)}...</div>
+                    {Array.isArray(result.result.deliverables) ? (
+                      // New format: array of file paths
+                      result.result.deliverables.map((filePath, idx) => {
+                        const fileName = filePath.split('/').pop();
+                        const fileType = fileName.split('.').pop().toUpperCase();
+                        const downloadUrl = `https://agentflow-backend-99xa.onrender.com/api/orchestration/download/${fileName}`;
+                        
+                        return (
+                          <div key={idx} className="border border-gray-200 rounded-lg p-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <Play className="w-4 h-4 text-orange-500 mr-2" />
+                                <div>
+                                  <span className="font-medium text-gray-800">{fileName}</span>
+                                  <div className="text-sm text-gray-600">
+                                    Type: {fileType} | Path: {filePath}
+                                  </div>
                                 </div>
-                              ))}
+                              </div>
+                              <a
+                                href={downloadUrl}
+                                download={fileName}
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+                              >
+                                Download
+                              </a>
                             </div>
                           </div>
-                        </div>
-                      </div>
+                        );
+                      })
+                    ) : (
+                      // Legacy format: object with presentation/content structure
+                      <>
+                        {result.result.deliverables.presentation && (
+                          <div className="border border-gray-200 rounded-lg p-3">
+                            <div className="flex items-center mb-2">
+                              <Play className="w-4 h-4 text-orange-500 mr-2" />
+                              <span className="font-medium text-gray-800">PowerPoint Presentation</span>
+                            </div>
+                            <div className="text-sm text-gray-600 space-y-1">
+                              <p><strong>File:</strong> {result.result.deliverables.presentation.file_path}</p>
+                              <p><strong>Slides:</strong> {result.result.deliverables.presentation.slides_count}</p>
+                              <p><strong>Duration:</strong> {result.result.deliverables.presentation.estimated_duration}</p>
+                              <p><strong>Format:</strong> {result.result.deliverables.presentation.format}</p>
+                              <div className="mt-2">
+                                <strong>Features:</strong>
+                                <ul className="list-disc list-inside ml-2">
+                                  {result.result.deliverables.presentation.features?.map((feature, idx) => (
+                                    <li key={idx}>{feature}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {result.result.deliverables.content && (
+                          <div className="border border-gray-200 rounded-lg p-3">
+                            <div className="flex items-center mb-2">
+                              <Target className="w-4 h-4 text-purple-500 mr-2" />
+                              <span className="font-medium text-gray-800">Content & Narrative</span>
+                            </div>
+                            <div className="text-sm text-gray-600 space-y-1">
+                              <p><strong>Target Audience:</strong> {result.result.deliverables.content.target_audience}</p>
+                              <p><strong>Duration:</strong> {result.result.deliverables.content.estimated_duration}</p>
+                              <div className="mt-2">
+                                <strong>Slides Created:</strong>
+                                <div className="mt-1 space-y-1">
+                                  {result.result.deliverables.content.slides?.map((slide, idx) => (
+                                    <div key={idx} className="bg-gray-50 p-2 rounded">
+                                      <div className="font-medium text-xs text-gray-800">{slide.title}</div>
+                                      <div className="text-xs text-gray-600 mt-1">{slide.narrative?.substring(0, 100)}...</div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
+                  
+                  {/* Download All Button */}
+                  {result.execution_id && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <a
+                        href={`https://agentflow-backend-99xa.onrender.com/api/orchestration/deliverables/download-all/${result.execution_id}`}
+                        download={`agentflow_deliverables_${result.execution_id}.zip`}
+                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-medium transition-colors inline-flex items-center"
+                      >
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Download All Files (ZIP)
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
 
